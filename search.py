@@ -71,47 +71,133 @@ def tinyMazeSearch(problem):
     s = Directions.SOUTH
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
-
 def depthFirstSearch(problem):
-    """
-    Search the deepest nodes in the search tree first.
+  """
+  Returns a solution or failure
+  Search the deepest nodes in the search tree first
+  """
+  #Initalise Frontier Using Initial State of Problem
+  frontier = GraphStack()
+  startNode = Node((problem.getStartState(), None, None))
 
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
+  #Check if start node is goal
+  if problem.isGoalState(startNode.state):
+      return []
 
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
+  for successors in problem.getSuccessors(problem.getStartState()):
+      newNode = Node(successors, startNode)
+      frontier.push(newNode)
 
-    print "Start:", problem.getStartState()
-    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
-    """
-    print "Start:", problem.getStartState()
-    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
-    util.raiseNotDefined()
+  #initialize the explored set to be empty
+  explored = list()
+  explored.append(startNode.state)
+
+  while not frontier.isEmpty():
+      #choose a leaf node and remove it from the frontier
+      leafNode = frontier.pop()
+      #if the node contains a goal state then return the corresponding solution
+      if problem.isGoalState(leafNode.state):
+          return leafNode.getPath()
+      #add state visited node to the explored set
+      explored.append(leafNode.state)
+      #expand the chosen node, adding the resulting nodes to the frontier if not in the frontier or explored set
+      for successor in problem.getSuccessors(leafNode.state):
+          newNode = Node(successor, leafNode)
+          if newNode.state not in frontier.stateList and newNode.state not in explored:
+              frontier.push(newNode)
+  #if the frontier is empty then return failure
+  return []
 
 def breadthFirstSearch(problem):
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+  """
+  Search the shallowest nodes in the search tree first.
+  """
+  frontier = GraphQueue()
+  startNode = Node((problem.getStartState(), None, None))
+
+  #Check if start node is goal
+  if problem.isGoalState(startNode.state):
+      return []
+
+  for successors in problem.getSuccessors(problem.getStartState()):
+      newNode = Node(successors, startNode)
+      frontier.push(newNode)
+
+  explored = list()
+  explored.append(startNode.state)
+
+  while not frontier.isEmpty():
+      leafNode = frontier.pop()
+      if problem.isGoalState(leafNode.state):
+          return leafNode.getPath()
+      explored.append(leafNode.state)
+      for successor in problem.getSuccessors(leafNode.state):
+          newNode = Node(successor, leafNode)
+          if newNode.state not in frontier.stateList and newNode.state not in explored:
+              frontier.push(newNode)
+  print "No solution found"
+  return []
 
 def uniformCostSearch(problem):
-    """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+  "Search the node of least total cost first. "
+  frontier = PriorityQueue()
+  startNode = Node((problem.getStartState(), None, None))
+
+  #Check if start node is goal
+  if problem.isGoalState(startNode.state):
+      return []
+
+  for successors in problem.getSuccessors(problem.getStartState()):
+      newNode = Node(successors, startNode)
+      frontier.push(newNode, 0)
+
+  explored = list()
+  explored.append(startNode.state)
+
+  while not frontier.isEmpty():
+      leafNode = frontier.pop()
+      if problem.isGoalState(leafNode.state):
+          return leafNode.getPath()
+      explored.append(leafNode.state)
+      for successor in problem.getSuccessors(leafNode.state):
+          newNode = Node(successor, leafNode)
+          if newNode.state not in frontier.stateList and newNode.state not in explored:
+              frontier.push(newNode, newNode.pathCost)
+  return []
 
 def nullHeuristic(state, problem=None):
-    """
-    A heuristic function estimates the cost from the current state to the nearest
-    goal in the provided SearchProblem.  This heuristic is trivial.
-    """
-    return 0
+  """
+  A heuristic function estimates the cost from the current state to the nearest
+  goal in the provided SearchProblem.  This heuristic is trivial.
+  """
+  return 0
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-    """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+  "Search the node that has the lowest combined cost and heuristic first."
+  frontier = PriorityQueueWithFunction(heuristic, problem)
+  startNode = Node((problem.getStartState(), None, None))
+
+  #Check if start node is goal
+  if problem.isGoalState(startNode.state):
+      return []
+
+  for successors in problem.getSuccessors(problem.getStartState()):
+      newNode = Node(successors, startNode)
+      frontier.push(newNode)
+
+  explored = list()
+  explored.append(startNode.state)
+
+  while not frontier.isEmpty():
+      leafNode = frontier.pop()
+      if problem.isGoalState(leafNode.state):
+          return leafNode.getPath()
+      explored.append(leafNode.state)
+      for successor in problem.getSuccessors(leafNode.state):
+          newNode = Node(successor, leafNode)
+          if newNode.state not in frontier.stateList and newNode.state not in explored:
+              frontier.push(newNode)
+  return []
 
 
 # Abbreviations
